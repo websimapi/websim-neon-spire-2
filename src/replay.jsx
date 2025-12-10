@@ -2,7 +2,11 @@ import { audio } from "./audio.js";
 function mountReplayUI(replayData, onClose) {
   const root = document.getElementById("replay-root");
   const gameCanvas = document.getElementById("gameCanvas");
+  const uiLayer = document.getElementById("ui-layer");
   if (!root || !gameCanvas || !replayData) return;
+  if (uiLayer) {
+    uiLayer.style.display = "none";
+  }
   root.innerHTML = "";
   root.style.pointerEvents = "auto";
   const container = document.createElement("div");
@@ -12,19 +16,6 @@ function mountReplayUI(replayData, onClose) {
   container.style.flexDirection = "column";
   container.style.pointerEvents = "none";
   container.style.background = "rgba(0,0,0,0.4)";
-  const header = document.createElement("div");
-  header.textContent = "INSTANT REPLAY";
-  header.style.position = "absolute";
-  header.style.top = "16px";
-  header.style.left = "0";
-  header.style.right = "0";
-  header.style.textAlign = "center";
-  header.style.fontFamily = "Orbitron, sans-serif";
-  header.style.fontSize = "18px";
-  header.style.color = "#00f3ff";
-  header.style.textShadow = "0 0 10px #00f3ff";
-  header.style.pointerEvents = "none";
-  container.appendChild(header);
   const closeBtn = document.createElement("button");
   closeBtn.textContent = "\u2715";
   closeBtn.style.position = "absolute";
@@ -165,6 +156,9 @@ function mountReplayUI(replayData, onClose) {
     if (rafId !== null) cancelAnimationFrame(rafId);
     root.innerHTML = "";
     root.style.pointerEvents = "none";
+    if (uiLayer) {
+      uiLayer.style.display = "";
+    }
     if (onClose) onClose();
   }
   closeBtn.addEventListener("click", () => {
