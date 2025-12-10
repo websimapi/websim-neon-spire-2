@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Spire</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.3.1?dev",
+            "react-dom": "https://esm.sh/react-dom@18.3.1?dev",
+            "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?dev",
+            "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime?dev",
+            "react/jsx-dev-runtime": "https://esm.sh/react@18.3.1/jsx-dev-runtime?dev",
+            "remotion": "https://esm.sh/remotion@4.0.350?external=react,react-dom&dev",
+            "@remotion/player": "https://esm.sh/@remotion/player@4.0.350?external=react,react-dom&dev",
+            "@remotion/gif": "https://esm.sh/@remotion/gif@4.0.350?external=react,react-dom,remotion&dev",
+            "@remotion/transitions": "https://esm.sh/@remotion/transitions@4.0.350?external=react,react-dom,remotion&dev",
+            "@websim/remotion/player": "https://esm.websim.com/@websim/remotion/player",
+            "mediabunny": "https://esm.sh/mediabunny@1.19.1"
+        }
+    }
+    </script>
+</head>
+<body>
+
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Replay Container (React Root) -->
+    <div id="replay-root" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:20; pointer-events:none;"></div>
+
+    <!-- UI Overlay Layer -->
+    <div id="ui-layer">
+        
+        <!-- Main Menu -->
+        <div id="menu-screen" class="screen active">
+            <h1 class="title">NEON SPIRE</h1>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <span class="label">LEVEL</span>
+                    <span class="value" id="menu-level">1</span>
+                </div>
+                <div class="stat-box">
+                    <span class="label">DATA</span>
+                    <span class="value" id="menu-currency">0</span>
+                </div>
+            </div>
+
+            <button id="btn-play" class="primary-btn">
+                <img src="icon_play.png" alt="Play" class="btn-icon">
+                CONNECT
+            </button>
+
+            <button id="btn-upgrades" class="secondary-btn">SYSTEM UPGRADES</button>
+            <button id="btn-daily" class="secondary-btn">DAILY REWARDS</button>
+            
+            <div class="highscore">BEST HEIGHT: <span id="menu-highscore">0</span>m</div>
+        </div>
+
+        <!-- In-Game HUD -->
+        <div id="hud-screen" class="screen">
+            <div class="hud-top">
+                <div class="score"><span id="hud-score">0</span>m</div>
+                <div class="combo">COMBO x<span id="hud-combo">0</span></div>
+            </div>
+            <div class="hud-currency">+<span id="hud-collected">0</span> DATA</div>
+        </div>
+
+        <!-- Upgrade Screen -->
+        <div id="upgrade-screen" class="screen">
+            <h2>SYSTEM UPGRADES</h2>
+            <div class="currency-display">DATA: <span id="upgrade-currency">0</span></div>
+            
+            <div id="upgrades-list">
+                <!-- Populated by JS -->
+            </div>
+
+            <button id="btn-back-menu" class="secondary-btn">BACK</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <h2>CONNECTION LOST</h2>
+            <div class="result-box">
+                <div class="result-row">HEIGHT: <span id="res-score">0</span>m</div>
+                <div class="result-row">DATA: <span id="res-currency">0</span></div>
+                <div class="result-row highlight">TOTAL: <span id="res-total">0</span></div>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div class="progress-label">LEVEL PROGRESS</div>
+                <div class="progress-track">
+                    <div id="xp-bar" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <button id="btn-retry" class="primary-btn">RECONNECT</button>
+            <button id="btn-replay" class="secondary-btn" style="border-color: var(--neon-blue); color: var(--neon-blue); margin-top: 10px;">INSTANT REPLAY</button>
+            <button id="btn-home" class="secondary-btn">HOME</button>
+        </div>
+
+        <!-- Daily Reward Modal -->
+        <div id="daily-modal" class="modal">
+            <div class="modal-content">
+                <h3>DAILY LOGIN</h3>
+                <p>New supply crate received!</p>
+                <div class="reward-reveal">
+                    <img src="icon_gem.png" class="reward-icon">
+                    <span>+500 DATA</span>
+                </div>
+                <button id="btn-claim-daily" class="primary-btn">CLAIM</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
