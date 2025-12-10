@@ -1,17 +1,16 @@
-import { state } from "./state.js";
 function mountReplayUI(replayData, onClose) {
   const root = document.getElementById("replay-root");
-  if (!root) return;
+  const gameCanvas = document.getElementById("gameCanvas");
+  if (!root || !gameCanvas || !replayData) return;
   root.innerHTML = "";
+  root.style.pointerEvents = "auto";
   const container = document.createElement("div");
   container.style.position = "absolute";
   container.style.inset = "0";
   container.style.display = "flex";
   container.style.flexDirection = "column";
-  container.style.alignItems = "center";
-  container.style.justifyContent = "center";
-  container.style.background = "#000";
-  container.style.pointerEvents = "auto";
+  container.style.pointerEvents = "none";
+  container.style.background = "rgba(0,0,0,0.4)";
   const header = document.createElement("div");
   header.textContent = "INSTANT REPLAY";
   header.style.position = "absolute";
@@ -23,6 +22,7 @@ function mountReplayUI(replayData, onClose) {
   header.style.fontSize = "18px";
   header.style.color = "#00f3ff";
   header.style.textShadow = "0 0 10px #00f3ff";
+  header.style.pointerEvents = "none";
   container.appendChild(header);
   const closeBtn = document.createElement("button");
   closeBtn.textContent = "\u2715";
@@ -41,14 +41,8 @@ function mountReplayUI(replayData, onClose) {
   closeBtn.style.display = "flex";
   closeBtn.style.alignItems = "center";
   closeBtn.style.justifyContent = "center";
+  closeBtn.style.pointerEvents = "auto";
   container.appendChild(closeBtn);
-  const canvas = document.createElement("canvas");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  canvas.style.width = "100%";
-  canvas.style.height = "100%";
-  canvas.style.maxHeight = "100%";
-  container.appendChild(canvas);
   const controls = document.createElement("div");
   controls.style.position = "absolute";
   controls.style.bottom = "16px";
@@ -57,7 +51,8 @@ function mountReplayUI(replayData, onClose) {
   controls.style.justifyContent = "flex-end";
   controls.style.alignItems = "center";
   controls.style.gap = "12px";
-  const btnStyle = (btn) => {
+  controls.style.pointerEvents = "auto";
+  const styleButton = (btn) => {
     btn.style.padding = "10px 18px";
     btn.style.fontFamily = "Orbitron, sans-serif";
     btn.style.fontSize = "12px";
@@ -69,10 +64,11 @@ function mountReplayUI(replayData, onClose) {
   };
   const downloadBtn = document.createElement("button");
   downloadBtn.textContent = "DOWNLOAD CLIP";
-  btnStyle(downloadBtn);
+  styleButton(downloadBtn);
   controls.appendChild(downloadBtn);
   container.appendChild(controls);
   root.appendChild(container);
+  const canvas = gameCanvas;
   const ctx = canvas.getContext("2d");
   const nodes = replayData.nodes || [];
   const frames = replayData.frames || [];
@@ -137,11 +133,12 @@ function mountReplayUI(replayData, onClose) {
     ctx.restore();
   }
   function step(timestamp) {
-    if (!playing) return;
+    if (!playing || frames.length === 0) return;
     if (startTime === null) startTime = timestamp;
     const elapsed = (timestamp - startTime) / 1e3;
     let t = elapsed;
-    if (t > duration && duration > 0) {
+    const total = duration || (frames[frames.length - 1]?.t || 0);
+    if (total > 0 && t > total) {
       startTime = timestamp;
       lastFrameIndex = 0;
       t = 0;
@@ -153,24 +150,36 @@ function mountReplayUI(replayData, onClose) {
     if (frame) drawFrame(frame);
     rafId = requestAnimationFrame(step);
   }
-  rafId = requestAnimationFrame(step);
+  if (frames.length > 0) {
+    rafId = requestAnimationFrame(step);
+  } else {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    downloadBtn.disabled = true;
+    downloadBtn.style.opacity = "0.4";
+    downloadBtn.style.cursor = "default";
+  }
   function cleanup() {
     playing = false;
     if (rafId !== null) cancelAnimationFrame(rafId);
     root.innerHTML = "";
+    root.style.pointerEvents = "none";
     if (onClose) onClose();
   }
   closeBtn.addEventListener("click", () => {
     cleanup();
   });
   let recording = false;
-  downloadBtn.addEventListener("click", async () => {
-    if (recording || !duration || duration <= 0) return;
+  downloadBtn.addEventListener("click", () => {
+    if (recording) return;
+    const total = duration || (frames[frames.length - 1]?.t || 0);
+    if (!total || total <= 0) return;
     recording = true;
     try {
       const stream = canvas.captureStream(60);
       const chunks = [];
-      const recorder = new MediaRecorder(stream, { mimeType: "video/webm; codecs=vp9" });
+      const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
+      const recorder = new MediaRecorder(stream, { mimeType });
       recorder.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) chunks.push(e.data);
       };
@@ -191,9 +200,9 @@ function mountReplayUI(replayData, onClose) {
       recorder.start();
       setTimeout(() => {
         recorder.stop();
-      }, duration * 1e3 + 200);
+      }, total * 1e3 + 250);
     } catch (err) {
-      console.error("Recording failed:", err);
+      console.error("Replay recording failed:", err);
       recording = false;
     }
   });
@@ -202,12 +211,14 @@ function mountReplayUI(replayData, onClose) {
     canvas.height = window.innerHeight;
   };
   window.addEventListener("resize", handleResize);
-  root.addEventListener("transitionend", () => {
+  const observer = new MutationObserver(() => {
     if (!root.classList.contains("active")) {
-      cleanup();
+      observer.disconnect();
       window.removeEventListener("resize", handleResize);
+      cleanup();
     }
-  }, { once: true });
+  });
+  observer.observe(root, { attributes: true, attributeFilter: ["class"] });
 }
 export {
   mountReplayUI
