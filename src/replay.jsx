@@ -1,3 +1,4 @@
+import { audio } from "./audio.js";
 function mountReplayUI(replayData, onClose) {
   const root = document.getElementById("replay-root");
   const gameCanvas = document.getElementById("gameCanvas");
@@ -170,13 +171,20 @@ function mountReplayUI(replayData, onClose) {
     cleanup();
   });
   let recording = false;
-  downloadBtn.addEventListener("click", () => {
+  downloadBtn.addEventListener("click", async () => {
     if (recording) return;
     const total = duration || (frames[frames.length - 1]?.t || 0);
     if (!total || total <= 0) return;
     recording = true;
     try {
+      await audio.init();
       const stream = canvas.captureStream(60);
+      const audioStream = audio.getStream();
+      if (audioStream) {
+        audioStream.getAudioTracks().forEach((track) => {
+          stream.addTrack(track);
+        });
+      }
       const chunks = [];
       const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
       const recorder = new MediaRecorder(stream, { mimeType });

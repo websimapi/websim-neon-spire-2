@@ -42,7 +42,7 @@ canvas {
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.3s;
-    background: #000;
+    background: transparent;
 }
 
 #replay-root.active {

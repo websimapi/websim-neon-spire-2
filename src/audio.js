@@ -1,5 +1,5 @@
 // Procedural Audio System (WebAudio API)
-// No external assets required, but designed to work with generated ones if present.
+// No external assets required, but designed to work with generated assets if present.
 
 class AudioSystem {
     constructor() {
@@ -7,6 +7,7 @@ class AudioSystem {
         this.masterGain = null;
         this.initialized = false;
         this.sounds = {};
+        this.mediaStreamDestination = null; // <--- added for recording support
     }
 
     async init() {
@@ -16,7 +17,11 @@ class AudioSystem {
         this.ctx = new AudioContext();
         this.masterGain = this.ctx.createGain();
         this.masterGain.gain.value = 0.3; // Prevent clipping
+
+        // Route audio both to speakers and to a MediaStreamDestination for recording
+        this.mediaStreamDestination = this.ctx.createMediaStreamDestination();
         this.masterGain.connect(this.ctx.destination);
+        this.masterGain.connect(this.mediaStreamDestination);
 
         this.initialized = true;
 
@@ -24,6 +29,11 @@ class AudioSystem {
         this.loadSound('dash', 'sfx_dash.mp3');
         this.loadSound('hit', 'sfx_hit.mp3');
         this.loadSound('levelup', 'sfx_levelup.mp3');
+    }
+
+    // Expose the MediaStream so recordings can include audio
+    getStream() {
+        return this.mediaStreamDestination ? this.mediaStreamDestination.stream : null;
     }
 
     async loadSound(name, url) {
