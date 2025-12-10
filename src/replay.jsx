@@ -52,11 +52,10 @@ function mountReplayUI(replayData, onClose) {
   const controls = document.createElement("div");
   controls.style.position = "absolute";
   controls.style.bottom = "16px";
-  controls.style.left = "0";
-  controls.style.right = "0";
+  controls.style.right = "16px";
   controls.style.display = "flex";
   controls.style.justifyContent = "flex-end";
-  controls.style.paddingRight = "16px";
+  controls.style.alignItems = "center";
   controls.style.gap = "12px";
   const btnStyle = (btn) => {
     btn.style.padding = "10px 18px";
