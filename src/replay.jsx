@@ -24,6 +24,24 @@ function mountReplayUI(replayData, onClose) {
   header.style.color = "#00f3ff";
   header.style.textShadow = "0 0 10px #00f3ff";
   container.appendChild(header);
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "\u2715";
+  closeBtn.style.position = "absolute";
+  closeBtn.style.top = "12px";
+  closeBtn.style.right = "12px";
+  closeBtn.style.width = "32px";
+  closeBtn.style.height = "32px";
+  closeBtn.style.borderRadius = "50%";
+  closeBtn.style.border = "1px solid #00f3ff";
+  closeBtn.style.background = "rgba(0,0,0,0.7)";
+  closeBtn.style.color = "#00f3ff";
+  closeBtn.style.fontFamily = "Orbitron, sans-serif";
+  closeBtn.style.fontSize = "16px";
+  closeBtn.style.cursor = "pointer";
+  closeBtn.style.display = "flex";
+  closeBtn.style.alignItems = "center";
+  closeBtn.style.justifyContent = "center";
+  container.appendChild(closeBtn);
   const canvas = document.createElement("canvas");
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -37,7 +55,8 @@ function mountReplayUI(replayData, onClose) {
   controls.style.left = "0";
   controls.style.right = "0";
   controls.style.display = "flex";
-  controls.style.justifyContent = "center";
+  controls.style.justifyContent = "flex-end";
+  controls.style.paddingRight = "16px";
   controls.style.gap = "12px";
   const btnStyle = (btn) => {
     btn.style.padding = "10px 18px";
@@ -49,13 +68,9 @@ function mountReplayUI(replayData, onClose) {
     btn.style.color = "#00f3ff";
     btn.style.cursor = "pointer";
   };
-  const closeBtn = document.createElement("button");
-  closeBtn.textContent = "CLOSE";
-  btnStyle(closeBtn);
   const downloadBtn = document.createElement("button");
   downloadBtn.textContent = "DOWNLOAD CLIP";
   btnStyle(downloadBtn);
-  controls.appendChild(closeBtn);
   controls.appendChild(downloadBtn);
   container.appendChild(controls);
   root.appendChild(container);
