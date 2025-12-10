@@ -96,6 +96,13 @@ export class Game {
             this.player.state = 'dash';
             this.player.orbitNode = null;
             audio.play('dash');
+
+            // Record dash event
+            if (this.replayData && this.replayData.frames.length > 0) {
+                const lastFrame = this.replayData.frames[this.replayData.frames.length - 1];
+                if (!lastFrame.events) lastFrame.events = [];
+                lastFrame.events.push({ type: 'dash' });
+            }
         }
     }
 
@@ -268,6 +275,14 @@ export class Game {
         this.running = false;
         this.replayData.duration = this.replayTime;
         audio.play('explode');
+
+        // Record explode event
+        if (this.replayData && this.replayData.frames.length > 0) {
+            const lastFrame = this.replayData.frames[this.replayData.frames.length - 1];
+            if (!lastFrame.events) lastFrame.events = [];
+            lastFrame.events.push({ type: 'explode' });
+        }
+
         this.onGameOver(this.replayData);
     }
 
