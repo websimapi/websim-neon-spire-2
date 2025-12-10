@@ -138,10 +138,13 @@ export class UI {
         if (!this.lastReplayData) return;
         try {
             const { mountReplayUI } = await import('./replay.jsx');
-            mountReplayUI(this.lastReplayData);
+            mountReplayUI(this.lastReplayData, () => {
+                // On Close Callback
+                document.getElementById('replay-root').classList.remove('active');
+            });
+            document.getElementById('replay-root').classList.add('active');
         } catch (e) {
             console.error("Failed to load replay module:", e);
-            alert("Replay system loading...");
         }
     }
 

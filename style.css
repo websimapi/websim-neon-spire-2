@@ -32,6 +32,59 @@ canvas {
     z-index: 1;
 }
 
+#replay-root {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    background: #000;
+}
+
+#replay-root.active {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.replay-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 30;
+    padding: 20px;
+}
+
+.replay-header {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 30;
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue);
+    pointer-events: none;
+}
+
+/* Original canvas styles continue... */
+canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
 #ui-layer {
     position: absolute;
     top: 0;

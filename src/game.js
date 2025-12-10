@@ -25,8 +25,10 @@ export class Game {
         this.replayData = {
             nodes: [],
             frames: [],
-            startTime: 0
+            startTime: 0,
+            duration: 0
         };
+        this.replayTime = 0;
         this.nodeIdCounter = 0;
     }
 
@@ -44,8 +46,10 @@ export class Game {
         this.replayData = {
             nodes: [],
             frames: [],
-            startTime: Date.now()
+            startTime: Date.now(),
+            duration: 0
         };
+        this.replayTime = 0;
         this.nodeIdCounter = 0;
 
         this.player = {
@@ -141,6 +145,7 @@ export class Game {
         if (!this.running) return;
 
         // Replay Recording
+        this.replayTime += dt;
         this.recordFrame();
 
         // Player Logic
@@ -261,12 +266,14 @@ export class Game {
 
     gameOver() {
         this.running = false;
+        this.replayData.duration = this.replayTime;
         audio.play('explode');
         this.onGameOver(this.replayData);
     }
 
     recordFrame() {
         this.replayData.frames.push({
+            t: this.replayTime,
             player: {
                 x: this.player.x,
                 y: this.player.y,
